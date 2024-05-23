@@ -4,8 +4,6 @@
    * change object/object literals and prototypes to classes and methods
    *  **/
 
-
-
 // Constructor to create an XHR object
 function coreHTTP() {
   this.http = new XMLHttpRequest();
