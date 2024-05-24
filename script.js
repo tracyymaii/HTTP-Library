@@ -1,5 +1,5 @@
 // Instantiate the object
-const http = new coreHTTP;
+const http = new coreHTTP();
 
 function ShowResponse(responseData) {
   let html = "<ul style='list-style:none'>";
@@ -21,56 +21,63 @@ function ShowError(err) {
   document.querySelector("#response").innerHTML = html;
 }
 
-function ProcessGet(err, respStr) {
-  if (err) {
-    ShowError(err);
-  } else {
+function ProcessGet(respStr) {
+  try{
     const respObj = JSON.parse(respStr);
     ShowResponse(respObj);
   }
-}
-
-function ProcessPost(err, respStr) {
-  if (err) {
-    ShowError(err);
-  } else {
-    const respObj = JSON.parse(respStr);
-    ShowResponse(respObj);
+  catch(Error){
+    ShowError(Error);
   }
 }
 
-function ProcessPut(err, respStr) {
-  if (err) {
-    ShowError(err);
-  } else {
+function ProcessPost(respStr) {
+  try{
     const respObj = JSON.parse(respStr);
     ShowResponse(respObj);
   }
+  catch(Error){
+    ShowError(Error);
+  }
 }
 
-function ProcessDelete(err, respStr) {
-  if (err) {
-    ShowError(err);
-  } else {
+function ProcessPut(respStr) {
+  try{
+    const respObj = JSON.parse(respStr);
+    ShowResponse(respObj);
+  }
+  catch(Error){
+    ShowError(Error);
+  }
+}
+
+function ProcessDelete(respStr) {
+  try{
     ShowResponse(respStr);
   }
+  catch(Error){
+    ShowError(Error);
+  }
 }
 
-function sendRequest(reqType, targetURL, data) {
-
-  switch (reqType) {
-    case "get": // Get users from the endpoint
-      http.get(targetURL, ProcessGet);
+async function sendRequest(reqType, targetURL, data) {
+  let response;
+  switch (reqType){
+    case "get":
+      ProcessGet(await http.get(targetURL));
       break;
-    case "post": // Post (add) user to the endpoint
-      http.post(targetURL, data, ProcessPost);
+    case "post":
+      response = await http.post(targetURL,data);
+      ProcessPost(response);
       break;
-    case "put": // Put (update) user in the endpoint
-      http.put(targetURL, data, ProcessPut);
+    case "put":
+      response = await http.put(targetURL,data);
+      ProcessPut(response);
       break;
-    case "delete": // Delete user in the placeholder website
-      http.delete(targetURL, ProcessDelete);
-      break;            
+    case "delete":
+      response = await http.delete(targetURL);
+      ProcessDelete(response);
+      break;
   }
 }
 
@@ -201,7 +208,7 @@ function StartUp() {
   document.querySelector("#rbGet").checked = true;
   SetupInput("get");
   
-  // Add listeners for the radio buttons
+  // Add listeners for the radio buttonsa
   document.querySelector("#rbGet").addEventListener("change", () => SetupInput("get"));
   document.querySelector("#rbPost").addEventListener("change", () => SetupInput("post"));
   document.querySelector("#rbPut").addEventListener("change", () => SetupInput("put"));
