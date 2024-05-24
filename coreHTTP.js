@@ -1,75 +1,56 @@
-  /** GOALS OF THIS FILE:
-   * Change callbacks to async and await
-   * change xhr to fetch function
-   * change object/object literals and prototypes to classes and methods
-   *  **/
-
-// Constructor to create an XHR object
-function coreHTTP() {
-  this.http = new XMLHttpRequest();
-}
-
-/* <<< HTTP GET request >>> */
-coreHTTP.prototype.get = function(url, callback) {
-  // Open the connection
-  this.http.open("GET", url);
-
-  // Process the request when it is returned.
-  this.http.onload = () => {
-    if (this.http.status >= 200 && this.http.status <= 299) {
-      callback(null, this.http.responseText);
-    } else {
-      callback(`GET Error: ${this.http.status}`);
-    }
-  }
-
-  // Send the request
-  this.http.send();
-}
-
-/* <<< HTTP POST request >>> */
-coreHTTP.prototype.post = function(url, data, callback) {
-  this.http.open("POST", url);
-  this.http.setRequestHeader("content-type","application/json");
-
-  this.http.onload = () => {
-    if (this.http.status >= 200 && this.http.status <= 299) {
-      callback(null, this.http.responseText);
-    } else {
-      callback(`POST Error: ${this.http.status}`);
-    }
-  }
-
-  this.http.send(JSON.stringify(data));
-}
-
-/* <<< HTTP PUT request >>> */
-coreHTTP.prototype.put = function(url, data, callback) {
-  this.http.open("PUT", url);
-  this.http.setRequestHeader("content-type","application/json");
-
-  this.http.onload = () => {
-    if (this.http.status >= 200 && this.http.status <= 299) {
-      callback(null, this.http.responseText);
-    } else {
-      callback(`PUT Error: ${this.http.status}`);
-    }
-  }
-
-  this.http.send(JSON.stringify(data));
-}
-
-/* <<< HTTP DELETE request >>> */
-coreHTTP.prototype.delete = function(url, callback) {
-  this.http.open("DELETE", url);
+class coreHTTP {
   
-  this.http.onload = () => {
-    if (this.http.status >= 200 && this.http.status <= 299) {
-      callback(null, "User Deleted");
+  async get(url) {
+    const response = await fetch(url);
+    
+    if (response.ok) {
+      return await response.text();
     } else {
-      callback(`DELETE Error: ${this.http.status}`);
+      console.log("GET Error: " + response.status);
+      return ("GET Error: " + response.status);
     }
   }
+ 
+  async post(url, data) {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {"content-type": "application/json"},
+      body: JSON.stringify(data)
+    });
+ 
+    if (response.ok) {
+      return await response.text();
+    } else {
+     console.log("POST Error: " + response.status);
+     return ("POST Error: " + response.status);
+    }
+  } 
 
-  this.http.send();  
+  async put(url, data) {
+    
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: {"content-type": "application/json"},
+      body: JSON.stringify(data)
+    });
+ 
+    if (response.ok) {
+      return await response.text();
+    } else {
+      console.log("PUT Error: " + response.status);
+    }
+  }
+  
+  async delete(url) {
+ 
+    const response = await fetch(url, {
+      method: "DELETE"
+    });
+    
+    if (response.ok) {
+      return "User Deleted";
+    } else {
+      console.log("Delete Error: " + response.status);
+    }
+  }
 }
