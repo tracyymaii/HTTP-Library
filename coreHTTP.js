@@ -1,5 +1,20 @@
+/**
+ * Members: Tracy Mai, Minnie Cao, Kamile Vaicekonis
+ * Assignment: HTTP Library 
+ * File: coreHTTP.js
+ * Course: CSC 3221 - Netcentric Computing - Dr. Dennis Vickers 
+ * 
+ */
+
 class coreHTTP {
-  
+
+   /**
+   * Get
+   * @param {*} url The url that we want to acesss.
+   * @returns Either the text if the page access was sucessful,
+   *          or an error message if it was not. 
+   */
+
   async get(url) {
     const response = await fetch(url);
     
@@ -10,6 +25,14 @@ class coreHTTP {
       return ("GET Error: " + response.status);
     }
   }
+
+   /**
+   * Post
+   * @param {*} url The url we want to access.
+   * @param {*} data The data we want to post. 
+   * @returns The newly added data if the page was accessed sucessfully.
+   *          Or an error message if it was not.
+   */
  
   async post(url, data) {
     const response = await fetch(url, {
@@ -26,6 +49,14 @@ class coreHTTP {
     }
   } 
 
+   /**
+   * Put
+   * @param {*} url The url we want to access.
+   * @param {*} data The data we want to change.
+   * @returns The data changed if it was successful, and an error
+   *          message otherwise.
+   */
+
   async put(url, data) {
     
     const response = await fetch(url, {
@@ -38,9 +69,17 @@ class coreHTTP {
       return await response.text();
     } else {
       console.log("PUT Error: " + response.status);
+      return ("PUT Error: " + response.status);
     }
   }
   
+  /**
+   * Delete
+   * @param {*} url The url we want to access
+   * @returns "User Deleted" if the url was able to be accessed, so
+   *           the user was deleted. Or an error message otherwise.
+   */
+
   async delete(url) {
  
     const response = await fetch(url, {
@@ -50,7 +89,30 @@ class coreHTTP {
     if (response.ok) {
       return "User Deleted";
     } else {
-      console.log("Delete Error: " + response.status);
+      console.log("DELETE Error: " + response.status);
+      return ("DELETE Error: " + response.status);
     }
   }
+
+  /**
+   * Patch
+   * @param {*} url The url we want to access
+   * @param {*} data The data we want to change.
+   * @returns The data changed if it was successful, and an error
+   *          message otherwise.
+   */
+  async patch(url, data) {
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {"content-type": "application/json"},
+      body: JSON.stringify(data)
+    });
+ 
+    if (response.ok) {
+      return await response.text();
+    } else {
+     console.log("PATCH Error: " + response.status);
+     return ("PATCH Error: " + response.status);
+    }
+  } 
 }
