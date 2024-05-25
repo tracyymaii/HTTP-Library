@@ -115,7 +115,7 @@ function ProcessDelete(respStr) {
 
 /**
  * Process Patch
- * Tries to parse the response string as a JSON, and sends it to Show Response.
+ * 
  * Calls Show Error to input the error message into HTML if it catches an error.
  * @param {} respStr 
  */
@@ -288,12 +288,8 @@ function SetupRequest() {
     if (ValidId(document.querySelector("#uIdArea>input").value,true)){
         let uFullName = document.querySelector("#uNameArea>input").value;
         if (ValidName(uFullName)) {
-          let uName = uFullName.split(" ")[0].trim();
-          let uMail = uName.concat("@spu.edu");
           data = {
-            name:`${uFullName}`,
-            username:`${uName}`,
-            email:`${uMail}`};
+            name:`${uFullName}`};
           okToSend = true;
         };
     }

@@ -19,6 +19,7 @@ class coreHTTP {
    const response = await fetch(url);
    
    if (response.ok) {
+     console.log("GET completed.")
      return await response.text();
    } else {
      console.log("GET Error: " + response.status);
@@ -42,7 +43,10 @@ class coreHTTP {
    });
 
    if (response.ok) {
-     return await response.text();
+     let resp = await response.json();
+     console.log("POST completed.")
+     console.log(resp);
+     return JSON.stringify(resp);
    } else {
     console.log("POST Error: " + response.status);
     return ("POST Error: " + response.status);
@@ -66,7 +70,10 @@ class coreHTTP {
    });
 
    if (response.ok) {
-     return await response.text();
+     let resp = await response.json();
+     console.log("PUT completed.")
+     console.log(resp);
+     return JSON.stringify(resp);
    } else {
      console.log("PUT Error: " + response.status);
      return ("PUT Error: " + response.status);
@@ -87,6 +94,7 @@ class coreHTTP {
    });
    
    if (response.ok) {
+     console.log("DELETE completed.")
      return "User Deleted";
    } else {
      console.log("DELETE Error: " + response.status);
@@ -109,10 +117,13 @@ class coreHTTP {
    });
 
    if (response.ok) {
-     return await response.text();
+     let resp = await response.json();
+     console.log("PATCH completed.")
+     console.log(resp);
+     return JSON.stringify(resp);
    } else {
-    console.log("PATCH Error: " + response.status);
-    return ("PATCH Error: " + response.status);
+     console.log("PATCH Error: " + response.status);
+     return ("PATCH Error: " + response.status);
    }
  } 
 }
