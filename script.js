@@ -54,8 +54,8 @@ function ProcessGet(respStr) {
     const respObj = JSON.parse(respStr);
     ShowResponse(respObj);
   }
-  catch(Error){
-    ShowError(Error);
+  catch(error){
+    ShowError(error.message);
   }
 }
 
@@ -72,8 +72,8 @@ function ProcessPost(respStr) {
     const respObj = JSON.parse(respStr);
     ShowResponse(respObj);
   }
-  catch(Error){
-    ShowError(Error);
+  catch(error){
+    ShowError(error.message);
   }
 }
 
@@ -91,8 +91,8 @@ function ProcessPut(respStr) {
     const respObj = JSON.parse(respStr);
     ShowResponse(respObj);
   }
-  catch(Error){
-    ShowError(Error);
+  catch(error){
+    ShowError(error.message);
   }
 }
 
@@ -108,8 +108,24 @@ function ProcessDelete(respStr) {
   try{
     ShowResponse(respStr);
   }
-  catch(Error){
-    ShowError(Error);
+  catch(error){
+    ShowError(error.message);
+  }
+}
+
+/**
+ * Process Patch
+ * Tries to parse the response string as a JSON, and sends it to Show Response.
+ * Calls Show Error to input the error message into HTML if it catches an error.
+ * @param {} respStr 
+ */
+function ProcessPatch(respStr) {
+  try{
+    const respObj = JSON.parse(respStr);
+    ShowResponse(respObj);
+  }
+  catch(error){
+    ShowError(error.message);
   }
 }
 
@@ -122,23 +138,28 @@ function ProcessDelete(respStr) {
  * @param {*} data 
  */
 async function sendRequest(reqType, targetURL, data) {
-  let response;
-  switch (reqType){
-    case "get":
-      ProcessGet(await http.get(targetURL));
-      break;
-    case "post":
-      response = await http.post(targetURL,data);
-      ProcessPost(response);
-      break;
-    case "put":
-      response = await http.put(targetURL,data);
-      ProcessPut(response);
-      break;
-    case "delete":
-      response = await http.delete(targetURL);
-      ProcessDelete(response);
-      break;
+  try{
+    switch (reqType){
+      case "get":
+        ProcessGet(await http.get(targetURL));
+        break;
+      case "post":
+        ProcessPost(await http.post(targetURL,data));
+        break;
+      case "put":
+        ProcessPut(await http.put(targetURL,data));
+        break;
+      case "delete":
+        ProcessDelete(await http.delete(targetURL));
+        break;
+      case "patch":
+        ProcessPatch(await http.patch(targetURL, data));
+        break;
+      default:
+        throw new Error(`Invalid request type: ${reqType}`);
+    }
+  }catch(error) {
+    ShowError(error.message);
   }
 }
 
@@ -260,6 +281,25 @@ function SetupRequest() {
     document.querySelector("#uNameArea>input").value = "";
     okToSend = (ValidId(document.querySelector("#uIdArea>input").value,true));
   };
+
+  // The setup to change the HTML when the request type is PATCH.
+  if (reqType === "patch") {
+    okToSend = false;
+    if (ValidId(document.querySelector("#uIdArea>input").value,true)){
+        let uFullName = document.querySelector("#uNameArea>input").value;
+        if (ValidName(uFullName)) {
+          let uName = uFullName.split(" ")[0].trim();
+          let uMail = uName.concat("@spu.edu");
+          data = {
+            name:`${uFullName}`,
+            username:`${uName}`,
+            email:`${uMail}`};
+          okToSend = true;
+        };
+    }
+  }
+  
+
   // The setup to change the HTML when there is an input error. 
   if (okToSend) {
     route = route.concat(document.querySelector("#uIdArea>input").value);
@@ -285,18 +325,27 @@ function SetupInput(reqType) {
     case "get":
       document.querySelector("#uIdArea").style.display = "flex";
       document.querySelector("#uNameArea").style.display = "none";
+
       break;
     case "post":
       document.querySelector("#uIdArea").style.display = "none";
       document.querySelector("#uNameArea").style.display = "flex";
+
       break;
     case "put":
       document.querySelector("#uIdArea").style.display = "flex";
       document.querySelector("#uNameArea").style.display = "flex";
+
       break;
     case "delete":
       document.querySelector("#uIdArea").style.display = "flex";
       document.querySelector("#uNameArea").style.display = "none";
+
+      break;
+    case "patch":
+      document.querySelector("#uIdArea").style.display = "flex";
+      document.querySelector("#uNameArea").style.display = "flex";
+
       break;
   }
 }
@@ -317,6 +366,7 @@ function StartUp() {
   document.querySelector("#rbPost").addEventListener("change", () => SetupInput("post"));
   document.querySelector("#rbPut").addEventListener("change", () => SetupInput("put"));
   document.querySelector("#rbDelete").addEventListener("change", () => SetupInput("delete"));
+  document.querySelector("#rbPatch").addEventListener("change", () => SetupInput("patch"));
 
   // Add the listener to the SEND button
   document.querySelector("#SendReq").addEventListener("click", (e) => {
